@@ -1,0 +1,2 @@
+# subscriptionManagerApp
+subscriptionapp
