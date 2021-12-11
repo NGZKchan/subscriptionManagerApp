@@ -119,7 +119,7 @@ class _HomePageState extends State<HomePage> {
                   child: Text('APEX'),
                   foregroundColor: Colors.red,
                 ),
-                title: Text('subscriptionItems'),
+                title: Text(subscriptionItems[index]['serviceName']),
                 onTap:  () async {
                   final newListText = await Navigator.of(context).push(
                     MaterialPageRoute(builder: (context) {
