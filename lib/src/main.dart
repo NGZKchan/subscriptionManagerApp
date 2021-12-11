@@ -92,27 +92,7 @@ class _HomePageState extends State<HomePage> {
           return Slidable(
             actionExtentRatio: 0.2,
             actionPane: SlidableDrawerActionPane(),
-            actions: [
-              IconSlideAction(
-                caption: 'Archive',
-                color: Colors.blue,
-                icon: Icons.archive,
-                onTap: () {},
-              ),
-              IconSlideAction(
-                caption: 'Share',
-                color: Colors.indigo,
-                icon: Icons.share,
-                onTap: (){},
-              )
-            ],
             secondaryActions: [
-              IconSlideAction(
-                caption: 'More',
-                color: Colors.black45,
-                icon: Icons.more_horiz,
-                onTap: (){},
-              ),
               IconSlideAction(
                 caption: '削除',
                 color: Colors.red,
@@ -126,8 +106,8 @@ class _HomePageState extends State<HomePage> {
                   );
                   setState(() {
                     subscriptionItems.removeAt(index);
-                    saveData(subscriptionItems);
                   });
+                  saveData(subscriptionItems);
                 },
               )
             ],
@@ -140,6 +120,14 @@ class _HomePageState extends State<HomePage> {
                   foregroundColor: Colors.red,
                 ),
                 title: Text('subscriptionItems'),
+                onTap:  () async {
+                  final newListText = await Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) {
+                      return AddListpage(subscriptionItem: subscriptionItems[index]);
+                    }),
+                  );
+                  saveData(subscriptionItems);
+                },
               ),
             ),
           );
