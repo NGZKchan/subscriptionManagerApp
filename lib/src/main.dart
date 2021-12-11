@@ -95,6 +95,14 @@ class _HomePageState extends State<HomePage> {
             child: Card(
               child: ListTile(
                 title: Text(subscriptionItems[index]['serviceName']),
+                onTap:  () async {
+                  final newListText = await Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) {
+                      return AddListpage(subscriptionItem: subscriptionItems[index]);
+                    }),
+                  );
+                  saveData(subscriptionItems);
+                },
               ),
             ),
           );
