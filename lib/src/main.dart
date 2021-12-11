@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'addlistpage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() {
   runApp(MyApp());
@@ -17,6 +18,10 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.teal,
       ),
       home: HomePage(),
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ],
       supportedLocales: [
         const Locale("en"),
         const Locale("ja"),
@@ -33,7 +38,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<String> subscriptionItems = [];
+  List subscriptionItems = [];
   Map subscriptionItem = {};
   _setListText () async {
     var prefs = await SharedPreferences.getInstance();
@@ -44,6 +49,7 @@ class _HomePageState extends State<HomePage> {
       }
     });
   }
+
 
   @override
   void initState() {
@@ -59,7 +65,26 @@ class _HomePageState extends State<HomePage> {
         centerTitle: true,
         actions: [
           Icon(Icons.shopping_cart),
+          Icon(Icons.clear),
         ],
+      ),
+      drawer: Drawer(
+        child: ListView(
+          children: [
+            DrawerHeader(
+              child: Text(
+                'MyApp',
+                style: TextStyle(
+                    fontSize: 24,
+                    color: Colors.white
+                ),
+              ),
+              decoration: BoxDecoration(
+                color: Colors.teal,
+              ),
+            ),
+          ],
+        ),
       ),
       body: ListView.builder(
         itemCount: subscriptionItems.length,

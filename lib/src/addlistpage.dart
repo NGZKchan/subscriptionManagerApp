@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-// import 'package:intl/intl.dart';
+import 'package:intl/intl.dart';
 import 'dart:async';
 import 'itemflie.dart';
 
@@ -45,24 +45,27 @@ class _AddListpageState extends State<AddListpage> {
     _subscriptionItem['memo'] = item['memo'];
   }
 
-  // final formatter = NumberFormat("#,###");
-  // var dateFormatter = new DateFormat('yyyy/MM/dd(E)', "ja_JP");
+  final formatter = NumberFormat("#,###");
+  var dateFormatter = new DateFormat('yyyy/MM/dd(E)', "ja_JP");
 
   // カレンダー実装
-  // Future<void> _selectDate(BuildContext context) async {
-  //   final DateTime selected = await showDatePicker(
-  //     locale: const Locale("ja"),
-  //     context: context,
-  //     initialDate: DateTime.now(),
-  //     firstDate: DateTime(2015),
-  //     lastDate: DateTime(2025),
-  //   );
-  //   if (selected != null) {
-  //     setState(() {
-  //       returnVal['nextPayDate'] = selected;
-  //     });
-  //   }
-  // }
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime selected = await showDatePicker(
+      locale: const Locale("ja"),
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2015),
+      lastDate: DateTime(2025),
+    );
+    if (selected != null) {
+      setState(() {
+        _subscriptionItem['nextPayDate'] = selected;
+      });
+    }
+  }
+
+  // バリエーション用
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -75,6 +78,7 @@ class _AddListpageState extends State<AddListpage> {
         appBar: AppBar(
           title: Text(_subscriptionItem['serviceName'] == '' ? '新規作成':'編集'),
         ),
+        key: _formKey,
         body: SingleChildScrollView(
           child: Column(
             children: [
@@ -134,14 +138,14 @@ class _AddListpageState extends State<AddListpage> {
                                 children: <Widget>[
                                   IconButton(
                                     icon: Icon(Icons.date_range),
-                                    // onPressed: () => _selectDate(context),
+                                     onPressed: () => _selectDate(context),
                                   ),
-                                  // Text(
-                                  //   //TextEditingController(text),
-                                  //   //value: widget.nextPayDate,
-                                  //   // dateFormatter.format(returnVal['nextPayDate']),
-                                  //   // style: TextStyle(fontSize: 16),
-                                  // ),
+                                  Text(
+                                    //TextEditingController(text),
+                                    //value: widget.nextPayDate,
+                                    dateFormatter.format(_subscriptionItem['nextPayDate']),
+                                    style: TextStyle(fontSize: 16),
+                                  ),
                                 ],
                               ),
                             ),
@@ -194,13 +198,33 @@ class _AddListpageState extends State<AddListpage> {
               Container(
                 child: ElevatedButton(
                   onPressed: () {
-                    // todo validationcheck つける  validate();
-                    _subscriptionItem['serviceName'] = _serviceName;
-                    _subscriptionItem['serviceFee'] = _serviceFee;
-                    _subscriptionItem['nextPayDate'] = _nextPayDate;
-                    _subscriptionItem['interval'] = _payInterval;
-                    _subscriptionItem['memo'] = _memo;
-                    Navigator.of(context).pop(_subscriptionItem);
+                    // バリデーションチェック
+                    if (_serviceName.isEmpty) {
+                      showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (_) {
+                          return AlertDialog(
+                            title: Text("入力値エラー"),
+                            content: Text("サービス名を入力してください。"),
+                            actions: [
+                              FlatButton(
+                                child: Text("閉じる"),
+                                onPressed: () => Navigator.pop(context),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    }
+                    else{
+                      _subscriptionItem['serviceName'] = _serviceName;
+                      _subscriptionItem['serviceFee'] = _serviceFee;
+                      _subscriptionItem['nextPayDate'] = _nextPayDate;
+                      _subscriptionItem['interval'] = _payInterval;
+                      _subscriptionItem['memo'] = _memo;
+                      Navigator.of(context).pop(_subscriptionItem);
+                    }
                   },
                   child: Text('登録', style: TextStyle(color: Colors.white)),
                 ),
@@ -254,4 +278,5 @@ class _DropDownItemState extends State<DropDownItem> {
     );
   }
 }
+
 
