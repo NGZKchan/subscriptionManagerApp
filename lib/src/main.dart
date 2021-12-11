@@ -61,7 +61,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('ToDoリスト'),
+        title: Text('サブスクリスト'),
         centerTitle: true,
       ),
       body: ListView.builder(
@@ -94,7 +94,8 @@ class _HomePageState extends State<HomePage> {
             key: ValueKey(subscriptionItems[index]),
             child: Card(
               child: ListTile(
-                title: Text(subscriptionItems[index]['serviceName']),
+                title: Text('サブスク名: ' + subscriptionItems[index]['serviceName']),
+                subtitle: Text('金額: ' + '¥' + subscriptionItems[index]['serviceFee'] + ' 次回支払日: ' + (subscriptionItems[index]['nextPayDate']).toString()),
                 onTap:  () async {
                   final newListText = await Navigator.of(context).push(
                     MaterialPageRoute(builder: (context) {
