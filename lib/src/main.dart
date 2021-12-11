@@ -70,8 +70,6 @@ class _HomePageState extends State<HomePage> {
           return Slidable(
             actionExtentRatio: 0.2,
             actionPane: SlidableDrawerActionPane(),
-            actions: [
-            ],
             secondaryActions: [
               IconSlideAction(
                 caption: '削除',
@@ -94,7 +92,20 @@ class _HomePageState extends State<HomePage> {
             key: ValueKey(subscriptionItems[index]),
             child: Card(
               child: ListTile(
+                leading: CircleAvatar(
+                  // backgroundColor: Colors.teal,
+                  child: Text('APEX'),
+                  foregroundColor: Colors.red,
+                ),
                 title: Text(subscriptionItems[index]['serviceName']),
+                onTap:  () async {
+                  final newListText = await Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) {
+                      return AddListpage(subscriptionItem: subscriptionItems[index]);
+                    }),
+                  );
+                  saveData(subscriptionItems);
+                },
               ),
             ),
           );
