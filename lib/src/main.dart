@@ -63,28 +63,6 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: Text('ToDoリスト'),
         centerTitle: true,
-        actions: [
-          Icon(Icons.shopping_cart),
-          Icon(Icons.clear),
-        ],
-      ),
-      drawer: Drawer(
-        child: ListView(
-          children: [
-            DrawerHeader(
-              child: Text(
-                'MyApp',
-                style: TextStyle(
-                    fontSize: 24,
-                    color: Colors.white
-                ),
-              ),
-              decoration: BoxDecoration(
-                color: Colors.teal,
-              ),
-            ),
-          ],
-        ),
       ),
       body: ListView.builder(
         itemCount: subscriptionItems.length,
@@ -93,26 +71,8 @@ class _HomePageState extends State<HomePage> {
             actionExtentRatio: 0.2,
             actionPane: SlidableDrawerActionPane(),
             actions: [
-              IconSlideAction(
-                caption: 'Archive',
-                color: Colors.blue,
-                icon: Icons.archive,
-                onTap: () {},
-              ),
-              IconSlideAction(
-                caption: 'Share',
-                color: Colors.indigo,
-                icon: Icons.share,
-                onTap: (){},
-              )
             ],
             secondaryActions: [
-              IconSlideAction(
-                caption: 'More',
-                color: Colors.black45,
-                icon: Icons.more_horiz,
-                onTap: (){},
-              ),
               IconSlideAction(
                 caption: '削除',
                 color: Colors.red,
@@ -126,20 +86,15 @@ class _HomePageState extends State<HomePage> {
                   );
                   setState(() {
                     subscriptionItems.removeAt(index);
-                    saveData(subscriptionItems);
                   });
+                  saveData(subscriptionItems);
                 },
               )
             ],
             key: ValueKey(subscriptionItems[index]),
             child: Card(
               child: ListTile(
-                leading: CircleAvatar(
-                  // backgroundColor: Colors.teal,
-                  child: Text('APEX'),
-                  foregroundColor: Colors.red,
-                ),
-                title: Text('subscriptionItems'),
+                title: Text(subscriptionItems[index]['serviceName']),
               ),
             ),
           );
