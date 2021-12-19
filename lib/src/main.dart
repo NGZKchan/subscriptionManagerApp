@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'addlistpage.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -40,6 +41,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List subscriptionItems = [];
   Map subscriptionItem = {};
+  var dateFormatter = new DateFormat('yyyy/MM/dd(E)', "ja_JP");
   _setListText () async {
     var prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -70,6 +72,8 @@ class _HomePageState extends State<HomePage> {
           return Slidable(
             actionExtentRatio: 0.2,
             actionPane: SlidableDrawerActionPane(),
+            actions: [
+            ],
             secondaryActions: [
               IconSlideAction(
                 caption: '削除',
@@ -92,15 +96,20 @@ class _HomePageState extends State<HomePage> {
             key: ValueKey(subscriptionItems[index]),
             child: Card(
               child: ListTile(
+                subtitle: Text('金額: ' + '¥' + subscriptionItems[index]['serviceFee'] + ' 次回支払日: ' + dateFormatter.format(subscriptionItems[index]['nextPayDate'])),
                 title: Text('サブスク名: ' + subscriptionItems[index]['serviceName']),
-                subtitle: Text('金額: ' + '¥' + subscriptionItems[index]['serviceFee'] + ' 次回支払日: ' + (subscriptionItems[index]['nextPayDate']).toString()),
                 onTap:  () async {
-                  final newListText = await Navigator.of(context).push(
+                  final changeListText = await Navigator.of(context).push(
                     MaterialPageRoute(builder: (context) {
                       return AddListpage(subscriptionItem: subscriptionItems[index]);
                     }),
                   );
-                  saveData(subscriptionItems);
+                  if (changeListText != null) {
+                    setState(() {
+                      subscriptionItems[index] = changeListText;
+                    });
+                    saveData(subscriptionItems[index]);
+                  }
                 },
               ),
             ),
