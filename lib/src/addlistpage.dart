@@ -15,13 +15,13 @@ class _AddListpageState extends State<AddListpage> {
   String _serviceName = '';
   String _serviceFee = '';
   DateTime  _nextPayDate = DateTime.now();
-  String _payInterval = '';
+  String _selectItem = 'oneMonth';
   String _memo = '';
   Map<String, Object> _subscriptionItem = {
     'serviceName': ''
     , 'serviceFee': ''
     , 'nextPayDate': DateTime.now()
-    , 'interval': 'month'
+    , 'interval': 'oneMonth'
     , 'memo': ''
   };
 
@@ -33,7 +33,7 @@ class _AddListpageState extends State<AddListpage> {
       _serviceName = _subscriptionItem['serviceName'];
       _serviceFee = _subscriptionItem['serviceFee'];
       _nextPayDate = _subscriptionItem['nextPayDate'];
-      _payInterval = _subscriptionItem['interval'];
+      _selectItem = _subscriptionItem['interval'];
       _memo = _subscriptionItem['memo'];
   }
 
@@ -60,12 +60,10 @@ class _AddListpageState extends State<AddListpage> {
     if (selected != null) {
       setState(() {
         _subscriptionItem['nextPayDate'] = selected;
+        _nextPayDate = selected;
       });
     }
   }
-
-  // バリエーション用
-  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +76,6 @@ class _AddListpageState extends State<AddListpage> {
         appBar: AppBar(
           title: Text(_subscriptionItem['serviceName'] == '' ? '新規作成':'編集'),
         ),
-        key: _formKey,
         body: SingleChildScrollView(
           child: Column(
             children: [
@@ -152,28 +149,28 @@ class _AddListpageState extends State<AddListpage> {
                             SizedBox(height: 20),
                             Text('支払いスパン', style: titleStyle),
                             SizedBox(height: 10),
-                            // DropdownButton<String>(
-                            //   value: widget.interval,
-                            //   icon: Icon(Icons.arrow_downward),
-                            //   iconSize: 24,
-                            //   elevation: 16,
-                            //   underline: Container(
-                            //     height: 1,
-                            //     color: Colors.grey[600],
-                            //   ),
-                            //   onChanged: (String value) {
-                            //     setState(() {
-                            //       returnVal['interval'] = value;
-                            //     });
-                            //   },
-                            //   items: payInterval.entries.map((entry) {
-                            //     return DropdownMenuItem(
-                            //       child: Text(entry.value),
-                            //       value: entry.key,
-                            //     );
-                            //   }).toList(),
-                            // ),
-                            DropDownItem(),
+                            DropdownButton<String>(
+                              icon: Icon(Icons.arrow_downward),
+                              value: _selectItem,
+                              iconSize: 24,
+                              elevation: 16,
+                              underline: Container(
+                                height: 1,
+                                color: Colors.grey[600],
+                              ),
+                              onChanged: (String value) {
+                                setState(() {
+                                  _selectItem = value;
+                                });
+                              },
+                              items: payInterval.entries.map((entry) {
+                                return DropdownMenuItem(
+                                  child: Text(entry.value),
+                                  value: entry.key,
+                                );
+                              }).toList(),
+                            ),
+                            //DropDownItem(),
                             SizedBox(height: 20),
                             Text('メモ', style: titleStyle),
                             TextFormField(
@@ -221,7 +218,7 @@ class _AddListpageState extends State<AddListpage> {
                       _subscriptionItem['serviceName'] = _serviceName;
                       _subscriptionItem['serviceFee'] = _serviceFee;
                       _subscriptionItem['nextPayDate'] = _nextPayDate;
-                      _subscriptionItem['interval'] = _payInterval;
+                      _subscriptionItem['interval'] = _selectItem;
                       _subscriptionItem['memo'] = _memo;
                       Navigator.of(context).pop(_subscriptionItem);
                     }
