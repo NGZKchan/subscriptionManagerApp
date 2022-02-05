@@ -127,7 +127,7 @@ class _AddListpageState extends State<AddListpage> {
                                 }
                             ),
                             SizedBox(height: 20),
-                            Text('次回支払日', style: titleStyle),
+                            Text('初回支払日', style: titleStyle),
                             SizedBox(height: 20),
                             Container(
                               height: 50,
