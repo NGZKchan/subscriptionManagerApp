@@ -96,7 +96,7 @@ class _HomePageState extends State<HomePage> {
             key: ValueKey(subscriptionItems[index]),
             child: Card(
               child: ListTile(
-                subtitle: Text('金額: ' + '¥' + subscriptionItems[index]['serviceFee'] + ' 初回支払日: ' + dateFormatter.format(subscriptionItems[index]['nextPayDate'])),
+                subtitle: Text('金額: ' + '¥' + subscriptionItems[index]['serviceFee'] + ' 次回支払日: ' + dateFormatter.format(subscriptionItems[index]['nextPayDate'])),
                 title: Text('サブスク名: ' + subscriptionItems[index]['serviceName']),
                 onTap:  () async {
                   final changeListText = await Navigator.of(context).push(
