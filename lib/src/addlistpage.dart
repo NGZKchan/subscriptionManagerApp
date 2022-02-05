@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-// import 'package:intl/intl.dart';
+import 'package:intl/intl.dart';
 import 'dart:async';
 import 'itemflie.dart';
 
@@ -15,13 +15,13 @@ class _AddListpageState extends State<AddListpage> {
   String _serviceName = '';
   String _serviceFee = '';
   DateTime  _nextPayDate = DateTime.now();
-  String _payInterval = '';
+  String _selectItem = 'oneMonth';
   String _memo = '';
   Map<String, Object> _subscriptionItem = {
     'serviceName': ''
     , 'serviceFee': ''
     , 'nextPayDate': DateTime.now()
-    , 'interval': 'month'
+    , 'interval': 'oneMonth'
     , 'memo': ''
   };
 
@@ -33,7 +33,7 @@ class _AddListpageState extends State<AddListpage> {
       _serviceName = _subscriptionItem['serviceName'];
       _serviceFee = _subscriptionItem['serviceFee'];
       _nextPayDate = _subscriptionItem['nextPayDate'];
-      _payInterval = _subscriptionItem['interval'];
+      _selectItem = _subscriptionItem['interval'];
       _memo = _subscriptionItem['memo'];
   }
 
@@ -45,24 +45,25 @@ class _AddListpageState extends State<AddListpage> {
     _subscriptionItem['memo'] = item['memo'];
   }
 
-  // final formatter = NumberFormat("#,###");
-  // var dateFormatter = new DateFormat('yyyy/MM/dd(E)', "ja_JP");
+  final formatter = NumberFormat("#,###");
+  var dateFormatter = new DateFormat('yyyy/MM/dd(E)', "ja_JP");
 
   // カレンダー実装
-  // Future<void> _selectDate(BuildContext context) async {
-  //   final DateTime selected = await showDatePicker(
-  //     locale: const Locale("ja"),
-  //     context: context,
-  //     initialDate: DateTime.now(),
-  //     firstDate: DateTime(2015),
-  //     lastDate: DateTime(2025),
-  //   );
-  //   if (selected != null) {
-  //     setState(() {
-  //       returnVal['nextPayDate'] = selected;
-  //     });
-  //   }
-  // }
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime selected = await showDatePicker(
+      locale: const Locale("ja"),
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2015),
+      lastDate: DateTime(2025),
+    );
+    if (selected != null) {
+      setState(() {
+        _subscriptionItem['nextPayDate'] = selected;
+        _nextPayDate = selected;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -126,7 +127,7 @@ class _AddListpageState extends State<AddListpage> {
                                 }
                             ),
                             SizedBox(height: 20),
-                            Text('次回支払日', style: titleStyle),
+                            Text('初回支払日', style: titleStyle),
                             SizedBox(height: 20),
                             Container(
                               height: 50,
@@ -134,42 +135,42 @@ class _AddListpageState extends State<AddListpage> {
                                 children: <Widget>[
                                   IconButton(
                                     icon: Icon(Icons.date_range),
-                                    // onPressed: () => _selectDate(context),
+                                     onPressed: () => _selectDate(context),
                                   ),
-                                  // Text(
-                                  //   //TextEditingController(text),
-                                  //   //value: widget.nextPayDate,
-                                  //   // dateFormatter.format(returnVal['nextPayDate']),
-                                  //   // style: TextStyle(fontSize: 16),
-                                  // ),
+                                  Text(
+                                    //TextEditingController(text),
+                                    //value: widget.nextPayDate,
+                                    dateFormatter.format(_subscriptionItem['nextPayDate']),
+                                    style: TextStyle(fontSize: 16),
+                                  ),
                                 ],
                               ),
                             ),
                             SizedBox(height: 20),
                             Text('支払いスパン', style: titleStyle),
                             SizedBox(height: 10),
-                            // DropdownButton<String>(
-                            //   value: widget.interval,
-                            //   icon: Icon(Icons.arrow_downward),
-                            //   iconSize: 24,
-                            //   elevation: 16,
-                            //   underline: Container(
-                            //     height: 1,
-                            //     color: Colors.grey[600],
-                            //   ),
-                            //   onChanged: (String value) {
-                            //     setState(() {
-                            //       returnVal['interval'] = value;
-                            //     });
-                            //   },
-                            //   items: payInterval.entries.map((entry) {
-                            //     return DropdownMenuItem(
-                            //       child: Text(entry.value),
-                            //       value: entry.key,
-                            //     );
-                            //   }).toList(),
-                            // ),
-                            DropDownItem(),
+                            DropdownButton<String>(
+                              icon: Icon(Icons.arrow_downward),
+                              value: _selectItem,
+                              iconSize: 24,
+                              elevation: 16,
+                              underline: Container(
+                                height: 1,
+                                color: Colors.grey[600],
+                              ),
+                              onChanged: (String value) {
+                                setState(() {
+                                  _selectItem = value;
+                                });
+                              },
+                              items: payInterval.entries.map((entry) {
+                                return DropdownMenuItem(
+                                  child: Text(entry.value),
+                                  value: entry.key,
+                                );
+                              }).toList(),
+                            ),
+                            //DropDownItem(),
                             SizedBox(height: 20),
                             Text('メモ', style: titleStyle),
                             TextFormField(
@@ -194,13 +195,33 @@ class _AddListpageState extends State<AddListpage> {
               Container(
                 child: ElevatedButton(
                   onPressed: () {
-                    // todo validationcheck つける  validate();
-                    _subscriptionItem['serviceName'] = _serviceName;
-                    _subscriptionItem['serviceFee'] = _serviceFee;
-                    _subscriptionItem['nextPayDate'] = _nextPayDate;
-                    _subscriptionItem['interval'] = _payInterval;
-                    _subscriptionItem['memo'] = _memo;
-                    Navigator.of(context).pop(_subscriptionItem);
+                    // バリデーションチェック
+                    if (_serviceName.isEmpty) {
+                      showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (_) {
+                          return AlertDialog(
+                            title: Text("入力値エラー"),
+                            content: Text("サービス名を入力してください。"),
+                            actions: [
+                              FlatButton(
+                                child: Text("閉じる"),
+                                onPressed: () => Navigator.pop(context),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    }
+                    else{
+                      _subscriptionItem['serviceName'] = _serviceName;
+                      _subscriptionItem['serviceFee'] = _serviceFee;
+                      _subscriptionItem['nextPayDate'] = _nextPayDate;
+                      _subscriptionItem['interval'] = _selectItem;
+                      _subscriptionItem['memo'] = _memo;
+                      Navigator.of(context).pop(_subscriptionItem);
+                    }
                   },
                   child: Text('登録', style: TextStyle(color: Colors.white)),
                 ),
@@ -254,4 +275,5 @@ class _DropDownItemState extends State<DropDownItem> {
     );
   }
 }
+
 

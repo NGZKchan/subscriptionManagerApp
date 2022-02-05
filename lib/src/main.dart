@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'addlistpage.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() {
   runApp(MyApp());
@@ -17,6 +19,10 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.teal,
       ),
       home: HomePage(),
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ],
       supportedLocales: [
         const Locale("en"),
         const Locale("ja"),
@@ -33,8 +39,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<String> subscriptionItems = [];
+  List subscriptionItems = [];
   Map subscriptionItem = {};
+  var dateFormatter = new DateFormat('yyyy/MM/dd(E)', "ja_JP");
   _setListText () async {
     var prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -44,6 +51,7 @@ class _HomePageState extends State<HomePage> {
       }
     });
   }
+
 
   @override
   void initState() {
@@ -55,11 +63,8 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('ToDoリスト'),
+        title: Text('サブスクリスト'),
         centerTitle: true,
-        actions: [
-          Icon(Icons.shopping_cart),
-        ],
       ),
       body: ListView.builder(
         itemCount: subscriptionItems.length,
@@ -68,26 +73,8 @@ class _HomePageState extends State<HomePage> {
             actionExtentRatio: 0.2,
             actionPane: SlidableDrawerActionPane(),
             actions: [
-              IconSlideAction(
-                caption: 'Archive',
-                color: Colors.blue,
-                icon: Icons.archive,
-                onTap: () {},
-              ),
-              IconSlideAction(
-                caption: 'Share',
-                color: Colors.indigo,
-                icon: Icons.share,
-                onTap: (){},
-              )
             ],
             secondaryActions: [
-              IconSlideAction(
-                caption: 'More',
-                color: Colors.black45,
-                icon: Icons.more_horiz,
-                onTap: (){},
-              ),
               IconSlideAction(
                 caption: '削除',
                 color: Colors.red,
@@ -101,20 +88,29 @@ class _HomePageState extends State<HomePage> {
                   );
                   setState(() {
                     subscriptionItems.removeAt(index);
-                    saveData(subscriptionItems);
                   });
+                  saveData(subscriptionItems);
                 },
               )
             ],
             key: ValueKey(subscriptionItems[index]),
             child: Card(
               child: ListTile(
-                leading: CircleAvatar(
-                  // backgroundColor: Colors.teal,
-                  child: Text('APEX'),
-                  foregroundColor: Colors.red,
-                ),
-                title: Text('subscriptionItems'),
+                subtitle: Text('金額: ' + '¥' + subscriptionItems[index]['serviceFee'] + ' 初回支払日: ' + dateFormatter.format(subscriptionItems[index]['nextPayDate'])),
+                title: Text('サブスク名: ' + subscriptionItems[index]['serviceName']),
+                onTap:  () async {
+                  final changeListText = await Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) {
+                      return AddListpage(subscriptionItem: subscriptionItems[index]);
+                    }),
+                  );
+                  if (changeListText != null) {
+                    setState(() {
+                      subscriptionItems[index] = changeListText;
+                    });
+                    saveData(subscriptionItems[index]);
+                  }
+                },
               ),
             ),
           );
